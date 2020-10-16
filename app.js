@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const express = require('express');
+const bodyParser = require('body-parser');
 
 // Creating connection
 const db = mysql.createConnection({
@@ -19,6 +20,8 @@ db.connect((err) => {
 });
 
 const app = express();
+
+app.use(bodyParser.json());
 
 // Create Table
 app.get('/createtable', (req,res) => {
@@ -47,10 +50,10 @@ app.get('/insert', (req,res) => {
 });
 
 // Insert dynamically
-app.get('/insert/:name/:age', (req,res) => {
+app.post('/insert_dynamic', (req,res) => {
     let data = {
-        Name: req.params.name,
-        Age: req.params.age
+        Name: req.body.name,
+        Age: req.body.age
     };
     let sql = 'INSERT INTO test SET ?';
     db.query(sql, data, (err,result) => {
@@ -74,8 +77,8 @@ app.get('/view', (req,res) => {
 });
 
 // Update
-app.get('/update/:name', (req,res) => {
-    let value = req.params.name;
+app.post('/update', (req,res) => {
+    let value = req.body.value;
     let sql = `UPDATE test SET Name = ${value} WHERE Age = ${10}`;
     db.query(sql, (err,result) => {
         if(err)
@@ -86,8 +89,8 @@ app.get('/update/:name', (req,res) => {
 });
 
 //Delete
-app.get('/delete/:age', (req,res) => {
-    let value = req.params.age;
+app.post('/delete', (req,res) => {
+    let value = req.body.age;
     let sql = `DELETE FROM test WHERE age = ${value}`;
     db.query(sql, (err,result) => {
         if(err)
